@@ -7,7 +7,7 @@ This section provides installation instructions. For detailed steps, please refe
 ## Usage
 1. Download this GitHub repository:
     ```sh
-    git clone http://... docker
+    git clone https://github.com/AndersonYu7/docker.git docker
     ```
 2. Move to the target directory:
     ```sh
