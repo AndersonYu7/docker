@@ -1,4 +1,6 @@
-FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
+# FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
+# FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
+FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
 ARG USER=initial
@@ -60,7 +62,7 @@ RUN apt update \
         htop \
         wget \
         curl \
-        tzdata \
+        # tzdata \
         # psmisc \
         # * Shell
         tmux \
@@ -70,7 +72,7 @@ RUN apt update \
         python3-pip \
         python3-dev \
         python3-setuptools \
-        # software-properties-common \
+        software-properties-common \
         # lsb-release \
         #cudnn8.6-cuda11.8
         # ${NV_CUDNN_PACKAGE} ${NV_CUDNN_PACKAGE_DEV} \
@@ -79,9 +81,6 @@ RUN apt update \
         xvfb \
         ffmpeg \ 
         freeglut3-dev \
-        #pyqt5
-        libxcb-* \
-        qtcreator \
         build-essential \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
@@ -114,6 +113,4 @@ EXPOSE 22
 ENTRYPOINT [ "/entrypoint.sh", "terminator" ]
 # ENTRYPOINT [ "/entrypoint.sh", "tmux" ]
 # ENTRYPOINT [ "/entrypoint.sh", "bash" ]
-# ENTRYPOINT [ "/entrypoint.sh", "bash", "-c", "bash && tail -f /dev/null" ]
-# ENTRYPOINT [ "/entrypoint.sh", "bash", "-c", "terminator; tail -f /dev/null" ]
 # ENTRYPOINT [ "/entrypoint.sh" ]

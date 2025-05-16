@@ -27,10 +27,10 @@ fi
 CONTAINER=$1
 IMAGE=$2
 
-# 預設值：使用 --rm 與 terminator 為 exec 命令
+# 預設值
 RM_OPTION="--rm"
 EXEC_CMD="terminator"
-RUN_MODE="rm"  # 默認模式
+RUN_MODE="rm"
 
 shift 2
 for param in "$@"; do
@@ -45,7 +45,7 @@ for param in "$@"; do
     fi
 done
 
-# 檢查是否已有同名 container (不論運行與否)
+# 若 container 已存在
 EXISTING_CONTAINER=$(docker ps -a --filter "name=^${CONTAINER}$" --format '{{.Names}}')
 if [ -n "${EXISTING_CONTAINER}" ]; then
     if docker ps --format '{{.Names}}' | grep -wq "${CONTAINER}"; then
@@ -58,18 +58,18 @@ if [ -n "${EXISTING_CONTAINER}" ]; then
     exit 0
 fi
 
-# 根據 RUN_MODE 決定啟動參數：
-# 若用 --rm 模式（前台），則執行命令只啟動 terminator，
-# 若用 no-rm 模式（背景），則加上 tail -f /dev/null 保持 container 運行
+# 根據模式設置執行參數
 if [ "${RUN_MODE}" = "rm" ]; then
     DETACH_FLAG=""
-    CMD="terminator"
+    INTERACTIVE="-it"
+    CMD="${EXEC_CMD}"
 else
     DETACH_FLAG="-d"
-    CMD="terminator; tail -f /dev/null"
+    INTERACTIVE=""
+    CMD="tail -f /dev/null"  # 不要執行 terminator！
 fi
 
-# 執行 container，並透過 --entrypoint 覆寫 Dockerfile 的 ENTRYPOINT
+# 執行 container
 docker run ${RM_OPTION} \
     --privileged \
     --network=host \
@@ -84,5 +84,11 @@ docker run ${RM_OPTION} \
     -v /etc/localtime:/etc/localtime:ro \
     -v /dev:/dev \
     -v "${WS_PATH}":/home/"${user}"/work \
-    -it ${DETACH_FLAG} --name "${CONTAINER}" \
+    ${INTERACTIVE} ${DETACH_FLAG} --name "${CONTAINER}" \
     --entrypoint bash "${IMAGE}" -c "${CMD}"
+
+# 若背景模式，啟動後自動進 container
+if [ "${RUN_MODE}" = "no-rm" ]; then
+    # sleep 1
+    docker exec -it "${CONTAINER}" ${EXEC_CMD}
+fi
