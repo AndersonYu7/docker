@@ -99,6 +99,7 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/terminator/terminator_setup.sh "${USER}" "${GROUP}" \
     && ./config/shell/tmux/tmux_setup.sh "${USER}" "${GROUP}" \
     && sudo rm -rf /config
+
 RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
 
