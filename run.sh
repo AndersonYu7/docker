@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # filepath: /home/ubuntu-6th/yu/docker_new/run.sh
 
-# 取得依賴參數
 source "$(dirname "$(readlink -f "${0}")")/get_param.sh"
 
 usage() {
@@ -18,7 +17,7 @@ usage() {
     exit 1
 }
 
-# 至少需要 container 與 image 兩個參數
+# Require at least container name and image name
 if [ $# -lt 2 ]; then
     echo "Error: Missing required parameters."
     usage
@@ -27,11 +26,12 @@ fi
 CONTAINER=$1
 IMAGE=$2
 
-# 預設值
+# Default values
 RM_OPTION="--rm"
 EXEC_CMD="terminator"
 RUN_MODE="rm"
 
+# Parse optional arguments
 shift 2
 for param in "$@"; do
     if [ "$param" = "no-rm" ]; then
@@ -45,7 +45,7 @@ for param in "$@"; do
     fi
 done
 
-# 若 container 已存在
+# Check if the container already exists
 EXISTING_CONTAINER=$(docker ps -a --filter "name=^${CONTAINER}$" --format '{{.Names}}')
 if [ -n "${EXISTING_CONTAINER}" ]; then
     if docker ps --format '{{.Names}}' | grep -wq "${CONTAINER}"; then
@@ -58,7 +58,7 @@ if [ -n "${EXISTING_CONTAINER}" ]; then
     exit 0
 fi
 
-# 根據模式設置執行參數
+# Set runtime flags based on mode
 if [ "${RUN_MODE}" = "rm" ]; then
     DETACH_FLAG=""
     INTERACTIVE="-it"
@@ -66,15 +66,16 @@ if [ "${RUN_MODE}" = "rm" ]; then
 else
     DETACH_FLAG="-d"
     INTERACTIVE=""
-    CMD="tail -f /dev/null"  # 不要執行 terminator！
+    CMD="tail -f /dev/null"  # Keep container alive without executing terminator
 fi
 
-# 執行 container
+# Run container
 docker run ${RM_OPTION} \
     --privileged \
     --network=host \
     --ipc=host \
     ${GPU_FLAG} \
+    -e DOCKER_NAME="${CONTAINER}" \
     -e DISPLAY="${DISPLAY}" \
     -e QT_X11_NO_MITSHM=1 \
     -v /home/"${user}"/.Xauthority:/home/"${user}"/.Xauthority \
@@ -87,8 +88,7 @@ docker run ${RM_OPTION} \
     ${INTERACTIVE} ${DETACH_FLAG} --name "${CONTAINER}" \
     --entrypoint bash "${IMAGE}" -c "${CMD}"
 
-# 若背景模式，啟動後自動進 container
+# If in background mode, automatically exec into the container after startup
 if [ "${RUN_MODE}" = "no-rm" ]; then
-    # sleep 1
     docker exec -it "${CONTAINER}" ${EXEC_CMD}
 fi
