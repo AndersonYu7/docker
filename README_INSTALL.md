@@ -37,3 +37,23 @@ docker run hello-world
 ```
 
 This command downloads a test image and runs it in a container. When the container runs, it prints a message and exits.
+
+### 7. Install NVIDIA Container Toolkit
+
+To enable GPU support in Docker containers, run the following script:
+
+```sh
+./install_nv_container_toolkit.sh
+```
+
+This script installs the NVIDIA Container Toolkit, which allows Docker containers to access the GPU using:
+
+```sh
+docker run --gpus all nvidia/cuda:11.8.0-base nvidia-smi
+```
+
+After the script completes, restart Docker to apply changes:
+
+```sh
+sudo systemctl restart docker
+```
