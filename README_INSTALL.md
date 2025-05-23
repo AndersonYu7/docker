@@ -49,7 +49,7 @@ To enable GPU support in Docker containers, run the following script:
 This script installs the NVIDIA Container Toolkit, which allows Docker containers to access the GPU using:
 
 ```sh
-docker run --gpus all nvidia/cuda:11.8.0-base nvidia-smi
+docker run --gpus all nvidia/cuda:11.8.0-devel-ubuntu22.04 nvidia-smi
 ```
 
 After the script completes, restart Docker to apply changes:
