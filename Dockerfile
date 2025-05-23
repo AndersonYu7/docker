@@ -1,6 +1,6 @@
-# FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 # FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
-FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
+# FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
 ARG USER=initial
@@ -12,8 +12,8 @@ ARG HARDWARE=x86_64
 ARG ENTRYPOINT_FILE=entrypint.sh
 
 # * Env vars for the nvidia-container-runtime.
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES all
+# ENV NVIDIA_VISIBLE_DEVICES all
+# ENV NVIDIA_DRIVER_CAPABILITIES all
 # ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 # * Setup users and groups
@@ -71,6 +71,7 @@ RUN apt update \
         # * base tools
         python3-pip \
         python3-dev \
+        python3-venv \
         python3-setuptools \
         software-properties-common \
         # lsb-release \
@@ -87,7 +88,12 @@ RUN apt update \
 
 # * Install pip packages
 RUN pip3 install --upgrade pip \
-    && pip3 install setuptools
+    && pip3 install setuptools \
+    nvitop \
+    ninja \
+    packaging
+
+RUN pip3 install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu118
 
 # RUN ./config/pip/pip_setup.sh
 
@@ -102,6 +108,11 @@ RUN ./config/shell/bash_setup.sh "${USER}" "${GROUP}" \
 
 RUN export CXX=g++
 RUN export MAKEFLAGS="-j nproc"
+
+RUN CUDA_PATH=$(dirname $(dirname $(which nvcc))) \
+    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc \
+    && echo 'export PATH="${CUDA_PATH}/bin:$PATH"' >> ~/.bashrc \
+    && echo 'export LD_LIBRARY_PATH="${CUDA_PATH}/lib64:$LD_LIBRARY_PATH"' >> ~/.bashrc
 
 # * Switch workspace to ~/work
 RUN sudo mkdir -p /home/"${USER}"/work
