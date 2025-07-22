@@ -1,5 +1,5 @@
-FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
-# FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
+# FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
 # FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 ############################## SYSTEM PARAMETERS ##############################
 # * Arguments
@@ -27,9 +27,9 @@ RUN groupadd --gid "${GID}" "${GROUP}" \
 
 # * Replace apt urls
 # ? Change to NYCU
-RUN sed -i 's@archive.ubuntu.com@ubuntu.cs.nycu.edu.tw/@g' /etc/apt/sources.list
+# RUN sed -i 's@archive.ubuntu.com@ubuntu.cs.nycu.edu.tw/@g' /etc/apt/sources.list
 # ? Change to Taiwan
-# RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
+RUN sed -i 's@archive.ubuntu.com@tw.archive.ubuntu.com@g' /etc/apt/sources.list
 
 # * Time zone
 ENV TZ=Asia/Taipei
@@ -93,7 +93,7 @@ RUN pip3 install --upgrade pip \
     ninja \
     packaging
 
-RUN pip3 install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu118
+RUN pip3 install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu128
 
 # RUN ./config/pip/pip_setup.sh
 

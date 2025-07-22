@@ -75,15 +75,21 @@ docker run ${RM_OPTION} \
     --network=host \
     --ipc=host \
     ${GPU_FLAG} \
+    -e NVIDIA_VISIBLE_DEVICES=all \
+    -e NVIDIA_DRIVER_CAPABILITIES=all \
+    -e VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json \
+    -e VK_LAYER_PATH=/usr/share/vulkan/explicit_layer.d \
     -e DOCKER_NAME="${CONTAINER}" \
     -e DISPLAY="${DISPLAY}" \
     -e QT_X11_NO_MITSHM=1 \
     -v /home/"${user}"/.Xauthority:/home/"${user}"/.Xauthority \
     -e XAUTHORITY=/home/"${user}"/.Xauthority \
+    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
     -v /etc/timezone:/etc/timezone:ro \
     -v /etc/localtime:/etc/localtime:ro \
     -v /dev:/dev \
+    -v /usr/share/vulkan:/usr/share/vulkan \
     -v "${WS_PATH}":/home/"${user}"/work \
     ${INTERACTIVE} ${DETACH_FLAG} --name "${CONTAINER}" \
     --entrypoint bash "${IMAGE}" -c "${CMD}"
