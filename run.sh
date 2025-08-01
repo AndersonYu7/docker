@@ -70,6 +70,7 @@ else
 fi
 
 # Run container
+xhost +local:root
 docker run ${RM_OPTION} \
     --privileged \
     --network=host \
@@ -82,8 +83,8 @@ docker run ${RM_OPTION} \
     -e DOCKER_NAME="${CONTAINER}" \
     -e DISPLAY="${DISPLAY}" \
     -e QT_X11_NO_MITSHM=1 \
-    -v /home/"${user}"/.Xauthority:/home/"${user}"/.Xauthority \
-    -e XAUTHORITY=/home/"${user}"/.Xauthority \
+    -v /root/.Xauthority:/root/.Xauthority \
+    -e XAUTHORITY=/root/.Xauthority \
     -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
     -v /etc/timezone:/etc/timezone:ro \
