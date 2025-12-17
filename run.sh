@@ -82,8 +82,6 @@ docker run ${RM_OPTION} \
     -v /root/.Xauthority:/root/.Xauthority \
     -e XAUTHORITY=/root/.Xauthority \
     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
-    -v /etc/timezone:/etc/timezone:ro \
-    -v /etc/localtime:/etc/localtime:ro \
     -v /dev:/dev \
     -v "${WS_PATH}":/home/"${user}"/work \
     ${INTERACTIVE} ${DETACH_FLAG} --name "${CONTAINER}" \
@@ -93,3 +91,6 @@ docker run ${RM_OPTION} \
 if [ "${RUN_MODE}" = "no-rm" ]; then
     docker exec -it "${CONTAINER}" ${EXEC_CMD}
 fi
+
+    # -v /etc/timezone:/etc/timezone:ro \
+    # -v /etc/localtime:/etc/localtime:ro \
