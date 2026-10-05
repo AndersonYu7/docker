@@ -115,6 +115,12 @@ RUN add-apt-repository -y universe \
 ENV ROS_DISTRO=${ROS_DISTRO}
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
+# * OpenGL on the NVIDIA GPU (PRIME render offload on hybrid laptops); otherwise RViz falls back
+# * to llvmpipe software rendering. __GL_YIELD=USLEEP stops the driver busy-waiting on a CPU core.
+ENV __NV_PRIME_RENDER_OFFLOAD=1
+ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
+ENV __GL_YIELD=USLEEP
+
 # * Install pip packages
 # ? Ubuntu 24.04 marks the system python as externally managed (PEP 668)
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
