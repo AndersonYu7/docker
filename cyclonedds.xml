@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- CycloneDDS config for talking to the Anvil Devbox over the network.
+     Set inside the container before starting ROS 2 nodes (then run `ros2 daemon stop`):
+       export ROS_DOMAIN_ID=<same as the Devbox>
+       export DEVBOX_IP=<IP of the Anvil Devbox>   # unicast discovery peer
+     The network interface is auto-detected. To pin one, edit <Interfaces> below,
+     e.g. <NetworkInterface name="wlp99s0"/>.
+     The Devbox side needs, in ~/anvil-loader/.env.config:
+       ROS_DOMAIN_ID=<same as this machine>
+       ENABLE_CYCLONEDDS=true
+       CYCLONEDDS_PEER_IP=<IP of this machine> -->
+<CycloneDDS xmlns="https://cdds.io/config">
+    <Domain id="any">
+        <General>
+            <Interfaces>
+                <NetworkInterface autodetermine="true"/>
+            </Interfaces>
+            <AllowMulticast>default</AllowMulticast>
+        </General>
+        <Discovery>
+            <!-- Unicast peer, so discovery still works when Wi-Fi drops multicast -->
+            <Peers>
+                <Peer address="${DEVBOX_IP:-127.0.0.1}"/>
+            </Peers>
+            <!-- The Devbox runs many ROS 2 processes; probe enough participant ports via unicast -->
+            <ParticipantIndex>auto</ParticipantIndex>
+            <MaxAutoParticipantIndex>100</MaxAutoParticipantIndex>
+        </Discovery>
+        <Internal>
+            <!-- Large buffers help camera topics; clamped to net.core.rmem_max on the host -->
+            <SocketReceiveBufferSize min="default" max="128MB"/>
+        </Internal>
+    </Domain>
+</CycloneDDS>

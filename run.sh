@@ -69,13 +69,18 @@ else
     CMD="tail -f /dev/null"  # Keep container alive without executing terminator
 fi
 
+# CycloneDDS config for reaching the Anvil Devbox (ROS_DOMAIN_ID / DEVBOX_IP are set inside the container)
+CYCLONEDDS_URI="file:///home/${user}/work/$(basename "${FILE_DIR}")/cyclonedds.xml"
+
 # Run container
+# ? --network=host is required for DDS discovery/traffic with other machines on the LAN
 xhost +local:root
 docker run ${RM_OPTION} \
     --privileged \
     --network=host \
     --ipc=host \
     ${GPU_FLAG} \
+    -e CYCLONEDDS_URI="${CYCLONEDDS_URI}" \
     -e NVIDIA_VISIBLE_DEVICES=all \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
     -e VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json \
