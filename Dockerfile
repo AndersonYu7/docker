@@ -131,7 +131,15 @@ RUN pip3 install setuptools \
     packaging
 
 # ? --index-url (not --extra-index-url), otherwise pip picks the newer CUDA 13 build from PyPI
-RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+# ? Pinned: lerobot 0.6.1 below needs torch < 2.12
+RUN pip3 install torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
+
+# * LeRobot (action chunk queue / RTC / temporal ensembling, used by anvil_policy_runner)
+# ? It needs numpy 2, like Anvil's own inference image; torch stays the cu128 build above.
+# ? scipy from pip because the apt one only supports numpy 1; setuptools < 80 for colcon.
+RUN pip3 install "lerobot==0.6.1" "torch==2.11.0+cu128" "torchvision==0.26.0+cu128" \
+        --extra-index-url https://download.pytorch.org/whl/cu128 \
+    && pip3 install "setuptools<80" "scipy>=1.14,<2"
 
 # RUN ./config/pip/pip_setup.sh
 
