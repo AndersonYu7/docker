@@ -72,6 +72,17 @@ fi
 # CycloneDDS config for reaching the Anvil Devbox (ROS_DOMAIN_ID / DEVBOX_IP are set inside the container)
 CYCLONEDDS_URI="file:///home/${user}/work/$(basename "${FILE_DIR}")/cyclonedds.xml"
 
+# WSL: OpenGL goes through Mesa's d3d12 driver to the Windows GPU (/dev/dxg). The image's
+# NVIDIA GLX / PRIME settings are for native Linux and leave RViz on llvmpipe here.
+# Native Ubuntu has no /dev/dxg, so nothing changes there.
+WSL_GPU_ARGS=""
+if [ -e /dev/dxg ]; then
+    WSL_GPU_ARGS="--device /dev/dxg -v /usr/lib/wsl:/usr/lib/wsl:ro \
+        -e __GLX_VENDOR_LIBRARY_NAME=mesa -e __NV_PRIME_RENDER_OFFLOAD=0 \
+        -e GALLIUM_DRIVER=d3d12 -e MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+        -e LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/local/cuda/lib64"
+fi
+
 # Run container
 # ? --network=host is required for DDS discovery/traffic with other machines on the LAN
 xhost +local:root
@@ -80,6 +91,7 @@ docker run ${RM_OPTION} \
     --network=host \
     --ipc=host \
     ${GPU_FLAG} \
+    ${WSL_GPU_ARGS} \
     -e CYCLONEDDS_URI="${CYCLONEDDS_URI}" \
     -e NVIDIA_VISIBLE_DEVICES=all \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
