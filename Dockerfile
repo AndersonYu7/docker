@@ -139,7 +139,7 @@ RUN pip3 install torch==2.11.0 torchvision==0.26.0 --index-url https://download.
 # ? scipy from pip because the apt one only supports numpy 1; setuptools < 80 for colcon.
 # ? packaging, numpy, scipy and setuptools come from apt (no RECORD file, pip cannot uninstall them):
 # ? install lerobot's versions next to them with --ignore-installed (pip's copies in /usr/local win)
-RUN pip3 install --ignore-installed "packaging>=24.2" "numpy>=2,<2.3" "scipy>=1.14,<2" "setuptools<80" \
+RUN pip3 install --ignore-installed "packaging>=24.2,<26" "numpy>=2,<2.3" "scipy>=1.14,<2" "setuptools<80" \
     && pip3 install "lerobot==0.6.1" "torch==2.11.0+cu128" "torchvision==0.26.0+cu128" \
         --extra-index-url https://download.pytorch.org/whl/cu128 \
     && pip3 install "setuptools<80" "scipy>=1.14,<2"
